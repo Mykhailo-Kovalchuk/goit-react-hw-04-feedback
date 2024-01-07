@@ -1,0 +1,29 @@
+.feedbackSection {
+  margin-top: 24px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 36px;
+  width: 100%;
+}
+
+.feedbackTitle {
+  margin: 0;
+}
+
+.feedbackButtons {
+  display: flex;
+  flex-direction: row;
+  gap: 40px;
+}
+
+.feedbackBtn {
+  width: 100px;
+  height: 40px;
+  font-size: 24px;
+  border-radius: 10px;
+  background-color: azure;
+  color: black;
+  /* border: none; */
+}
