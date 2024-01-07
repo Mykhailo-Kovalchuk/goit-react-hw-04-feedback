@@ -1,78 +1,83 @@
-import { Component } from 'react';
+// import { Component } from 'react';
+import { useState } from 'react';
 
 import { Statistics } from './Statistics/Statistics';
 import { Feedback } from './Feedback/Feedback';
 import { Section } from './Section/Section';
 import { Notification } from './Notification/Notification';
 
-export class App extends Component {
-  state = {
-    good: 0,
-    neutral: 0,
-    bad: 0,
-  };
+export const App = () => {
+
+  ////////////// Хук useState - Задаємо стани через Хуки
+  const [good, setGood] = useState(0);
+  const [neutral, setNeutral] = useState(0);
+  const [bad, setBad] = useState(0);
 
   // Statistics section handler - сумування всіх відгуків
-  countTotalFeedback() {
-    const sum = this.state.good + this.state.neutral + this.state.bad;
+  const countTotalFeedback = () => {
+    const sum = good + neutral + bad;
     return sum;
-  }
+  };
 
   // Функція підрахунку питомої ваги позитивних відгуків
-  countPositiveFeedbackPercentage(good, total) {
+  const countPositiveFeedbackPercentage = (good, total) => {
     const positive = (good / total) * 100;
     if (isNaN(positive)) {
       return 0;
     }
     return positive.toFixed(0);
-  }
-
-  // Feedback buttons section
-  btnHandler = currentKeyState => {
-    this.setState({ [currentKeyState]: this.state[currentKeyState] + 1 });
   };
 
-  render() {
-    return (
-      <div
-        style={{
-          // height: '100vh',
-          margin: '0 auto',
-          width: '650px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          fontSize: 40,
-          color: '#010101',
-        }}
-      >
-        <Section title="Please leave feedback">
-          <Feedback
-            options={Object.keys(this.state)}
-            onLeaveFeedback={this.btnHandler}
+  // Feedback buttons section ///////////// переробив логіку кнопки, щоб виконувала умови.
+  const btnHandler = (currentKeyState) => {
+    if (currentKeyState === 'good') {
+    setGood(prevState => prevState + 1 );
+    } else if (currentKeyState === 'neutral') {
+      setNeutral(prevState => prevState + 1 );
+    } else if (currentKeyState === 'bad') {
+      setBad(prevState => prevState + 1 );
+    }
+  };
+
+  return (
+    <div
+      style={{
+        // height: '100vh',
+        margin: '0 auto',
+        width: '650px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        fontSize: 40,
+        color: '#010101',
+      }}
+    >
+      <Section title="Please leave feedback">
+        <Feedback
+          options={['good', 'neutral', 'bad']}
+          onLeaveFeedback={btnHandler}
+        />
+      </Section>
+
+      <Section title="Statistics">
+        {countTotalFeedback() < 1 && (
+          <Notification message="There is no feedback" />
+        )}
+
+        {countTotalFeedback() > 0 && (
+          <Statistics
+            good={good}
+            neutral={neutral}
+            bad={bad}
+            total={countTotalFeedback()}
+            positivePercentage={countPositiveFeedbackPercentage(
+              good,
+              countTotalFeedback()
+            )}
           />
-        </Section>
-
-        <Section title="Statistics">
-          {this.countTotalFeedback() < 1 && (
-            <Notification message="There is no feedback" />
-          )}
-
-          {this.countTotalFeedback() > 0 && (
-            <Statistics
-              good={this.state.good}
-              neutral={this.state.neutral}
-              bad={this.state.bad}
-              total={this.countTotalFeedback()}
-              positivePercentage={this.countPositiveFeedbackPercentage(
-                this.state.good,
-                this.countTotalFeedback()
-              )}
-            />
-          )}
-        </Section>
-      </div>
-    );
-  }
-}
+        )}
+      </Section>
+    </div>
+  );
+};
